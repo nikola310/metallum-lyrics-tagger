@@ -23,11 +23,12 @@ class FileHandler(object):
         self._lyrics = 'lyrics'
         self._lyrics_getter = MetallumLyricsGetter()
         self._overwrite_lyrics = overwrite_lyrics
+        self._supported_files = ['.mp3', '.m4a']
         
     def read_files_and_add_lyrics(self, root_directory):
         for root, _, files in os.walk(root_directory, topdown=False):
             for name in files:
-                if name.endswith('.mp3'):
+                if self._is_music_file(name): #name.endswith('.mp3'):
                     try:
                         mp3_file = MediaFile(os.path.join(root, name))
                         if self._has_lyrics(mp3_file):
@@ -51,7 +52,12 @@ class FileHandler(object):
                 has_lyrics = True
 
         return has_lyrics
-        
+
+    def _is_music_file(self, name):
+        for file_type in self._supported_files:
+            if name.endswith(file_type):
+                return True
+        return False
         
     def _get_lyrics_and_save_file(self, file):
         

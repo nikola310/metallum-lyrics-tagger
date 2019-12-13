@@ -23,7 +23,7 @@ class FileHandler(object):
         self._lyrics = 'lyrics'
         self._lyrics_getter = MetallumLyricsGetter()
         self._overwrite_lyrics = overwrite_lyrics
-        self._supported_files = ['.mp3', '.m4a']
+        self._supported_files = ['.mp3', '.m4a', 'mp3', '.aac', '.alac', '.ogg', '.opus', '.flac', '.ape', '.wv', '.mpc', '.asf', '.aiff', '.dsf']
         
     def read_files_and_add_lyrics(self, root_directory):
         for root, _, files in os.walk(root_directory, topdown=False):

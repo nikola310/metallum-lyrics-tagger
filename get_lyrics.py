@@ -12,10 +12,9 @@ def run_program(root_directory, overwrite_lyrics):
     
     handler = FileHandler(overwrite_lyrics=overwrite_lyrics)
     
-    #for directory in root_directory:
     handler.read_files_and_add_lyrics(root_directory)
 
-    print('All lyrics saved.')
+    print('Program finished')
 
 
 def main(argv):
@@ -38,4 +37,5 @@ def main(argv):
 
 
 if __name__ == "__main__":
+	print(sys.argv[1:])
 	main(sys.argv[1:])

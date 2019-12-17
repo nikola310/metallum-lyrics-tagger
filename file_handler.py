@@ -9,6 +9,7 @@ from phrydy import MediaFile
 from phrydy.mediafile import FileTypeError
 from metallum_lyrics_getter import MetallumLyricsGetter
 from lyrics_getter import NoLyricsException
+from ssl import SSLError
 
 class FileHandler(object):
     '''
@@ -26,25 +27,29 @@ class FileHandler(object):
         self._supported_files = ['.mp3', '.m4a', 'mp3', '.aac', '.alac', '.ogg', '.opus', '.flac', '.ape', '.wv', '.mpc', '.asf', '.aiff', '.dsf']
         
     def read_files_and_add_lyrics(self, root_directory):
-        for root, _, files in os.walk(root_directory, topdown=False):
-            for name in files:
-                if self._is_music_file(name): #name.endswith('.mp3'):
-                    try:
-                        mp3_file = MediaFile(os.path.join(root, name))
-                        if self._has_lyrics(mp3_file):
-                            if self._overwrite_lyrics:
-                                self._get_lyrics_and_save_file(mp3_file)
+        if os.path.isdir(root_directory):
+            for root, _, files in os.walk(root_directory, topdown=True):
+                for name in files:
+                    if self._is_music_file(name):
+                        try:
+                            print('Processing', name)
+                            mp3_file = MediaFile(os.path.join(root, name))
+                            if self._has_lyrics(mp3_file):
+                                if self._overwrite_lyrics:
+                                    self._get_lyrics_and_save_file(mp3_file)
+                                else:
+                                    print('Skipping since there are already lyrics for', mp3_file.title)
                             else:
-                                print('Skipping since there are already lyrics for', mp3_file.title)
-                        else:
-                            self._get_lyrics_and_save_file(mp3_file)
-                        
-                    except FileTypeError:
-                        print('Unsupported file', name)
-                    except TypeError:
-                        print('Moving on, since tags are not formatted correctly for', name)
-                    
-                        
+                                self._get_lyrics_and_save_file(mp3_file)
+                        except FileTypeError:
+                            print('Unsupported file', name)
+                        except TypeError:
+                            print('Moving on, since tags are not formatted correctly for', name)
+                        except SSLError:
+                            print('Connection timed out. Moving on with the next file, but make sure your internet connection is alright.')
+        else:
+            print('Root directory path is not valid')
+
     def _has_lyrics(self, file):
         has_lyrics = False
         if file.lyrics is not None:
